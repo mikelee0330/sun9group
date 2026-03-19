@@ -1,79 +1,54 @@
-/* Sun9 Group — script.js (全站共用) */
-
+/* Sun9 Group — script.js */
 const SB_URL  = 'https://sdjqekzcqmohxslvzsgi.supabase.co';
 const SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkanFla3pjcW1vaHhzbHZ6c2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MTU5NDksImV4cCI6MjA4OTQ5MTk0OX0.3yxKXgqgazMo2g4DPKdSynSbYkFNnJ3C6hasaEMiq48';
 const IMG_CDN = `${SB_URL}/storage/v1/object/public/images`;
 const sb      = supabase.createClient(SB_URL, SB_KEY);
 
-/* 圖片 CDN 路徑 */
 const IMGS = {
   edinburgh: `${IMG_CDN}/founder-edinburgh.jpg`,
   workshop:  `${IMG_CDN}/founder-workshop.jpg`,
 };
 
-/* 平滑滾動 */
 function smoothTo(id, e) {
   if (e) e.preventDefault();
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/* 語系切換 */
-let enInit = false;
-function setLang(lang) {
-  const isEN = lang === 'en';
-  const zhPage = document.getElementById('zh-page');
-  const enPage = document.getElementById('en-page');
-  const zhNav  = document.getElementById('zh-nav');
-  const enNav  = document.getElementById('en-nav');
-  const btnZH  = document.getElementById('btn-zh');
-  const btnEN  = document.getElementById('btn-en');
-
-  if (zhPage) zhPage.style.display = isEN ? 'none' : 'block';
-  if (enPage) enPage.style.display = isEN ? 'block' : 'none';
-  if (zhNav)  zhNav.style.cssText  = isEN ? 'display:none!important' : '';
-  if (enNav)  enNav.style.cssText  = isEN ? '' : 'display:none!important';
-
-  if (btnZH) {
-    btnZH.className = !isEN
-      ? 'font-cinzel text-xs tracking-wider px-4 py-2 cursor-pointer transition-all bg-gold text-bk border-none'
-      : 'font-cinzel text-xs tracking-wider px-4 py-2 cursor-pointer transition-all bg-transparent text-white/30 border-none';
-  }
-  if (btnEN) {
-    btnEN.className = isEN
-      ? 'font-cinzel text-xs tracking-wider px-4 py-2 cursor-pointer transition-all bg-gold text-bk border-none'
-      : 'font-cinzel text-xs tracking-wider px-4 py-2 cursor-pointer transition-all bg-transparent text-white/30 border-none';
-  }
-  if (isEN && !enInit) { initParticles('en-c'); enInit = true; }
-  window.scrollTo(0, 0);
-}
-
-/* 載入文字內容 */
 async function loadContent() {
   try {
     const { data } = await sb.from('content').select('key,value');
     if (!data) return;
     const map = {};
     data.forEach(r => map[r.key] = r.value);
-    function set(id, key) {
+
+    // Hero 標題：三行結構
+    const t1 = document.getElementById('txt-hero-t1');
+    const t2 = document.getElementById('txt-hero-t2');
+    // t1 = 真正的差距，t2 = 在於誰能把流量...（含 HTML tag，直接 innerHTML）
+    if (t1 && map['hero_title_1']) t1.innerHTML = map['hero_title_1'];
+    if (t2 && map['hero_title_2']) t2.innerHTML = map['hero_title_2'];
+
+    function setHTML(id, key) {
       const el = document.getElementById(id);
-      if (el && map[key] !== undefined) el.innerHTML = map[key].replace(/\n/g, '<br>');
+      if (el && map[key] !== undefined) {
+        // 值若含 <br> 直接用，若含 \n 則轉換
+        el.innerHTML = map[key].replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+      }
     }
-    set('txt-hero-title',    'hero_title_2');
-    set('txt-hero-sub',      'hero_subtitle');
-    set('txt-pos-main',      'positioning_main');
-    set('txt-pos-sub',       'positioning_sub');
-    set('txt-founder-name',  'founder_name');
-    set('txt-founder-title', 'founder_title');
-    set('txt-founder-bio',   'founder_bio');
-    set('txt-founder-quote', 'founder_quote');
-    set('txt-p1-num','proof_1_num'); set('txt-p1-lab','proof_1_label');
-    set('txt-p2-num','proof_2_num'); set('txt-p2-lab','proof_2_label');
-    set('txt-p3-num','proof_3_num'); set('txt-p3-lab','proof_3_label');
-  } catch(e) { console.log('Content load skipped'); }
+    setHTML('txt-hero-sub',      'hero_subtitle');
+    setHTML('txt-pos-main',      'positioning_main');
+    setHTML('txt-pos-sub',       'positioning_sub');
+    setHTML('txt-founder-name',  'founder_name');
+    setHTML('txt-founder-title', 'founder_title');
+    setHTML('txt-founder-bio',   'founder_bio');
+    setHTML('txt-founder-quote', 'founder_quote');
+    setHTML('txt-p1-num','proof_1_num'); setHTML('txt-p1-lab','proof_1_label');
+    setHTML('txt-p2-num','proof_2_num'); setHTML('txt-p2-lab','proof_2_label');
+    setHTML('txt-p3-num','proof_3_num'); setHTML('txt-p3-lab','proof_3_label');
+  } catch(e) { console.log('Content load skipped:', e); }
 }
 
-/* 載入 Portfolio */
 async function loadPortfolio() {
   try {
     const { data } = await sb.from('portfolio').select('*').order('sort_order');
@@ -93,7 +68,6 @@ async function loadPortfolio() {
   } catch(e) {}
 }
 
-/* 圖片替換為 CDN URL */
 function loadImages() {
   document.querySelectorAll('[data-img]').forEach(el => {
     const key = el.getAttribute('data-img');
@@ -101,7 +75,6 @@ function loadImages() {
   });
 }
 
-/* 粒子特效 */
 function initParticles(canvasId) {
   const cv = document.getElementById(canvasId);
   if (!cv) return;
@@ -140,20 +113,16 @@ function initParticles(canvasId) {
   draw();
 }
 
-/* Scroll Reveal */
 const revObs = new IntersectionObserver(entries=>{
   entries.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('on');revObs.unobserve(e.target);} });
 }, {threshold:.07});
 document.querySelectorAll('.rev').forEach(el=>revObs.observe(el));
 
-/* Parallax */
 window.addEventListener('scroll', ()=>{
   const hi = document.querySelector('.hero-inner');
-  if (hi && !document.body.classList.contains('lang-en'))
-    hi.style.transform = `translateY(${window.pageYOffset*.11}px)`;
+  if (hi) hi.style.transform = `translateY(${window.pageYOffset*.11}px)`;
 });
 
-/* 初始化 */
 window.addEventListener('load', ()=>{
   loadImages();
   if (document.getElementById('c')) { initParticles('c'); loadContent(); loadPortfolio(); }

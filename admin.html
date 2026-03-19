@@ -10,16 +10,20 @@
 tailwind.config={theme:{extend:{colors:{gold:'#C9A84C','gold-l':'#E8C97A',bk:'#070707','bk-2':'#0D0D0D','bk-3':'#111111','bk-4':'#161616'},fontFamily:{serif:['"Cormorant Garamond"','Georgia','serif'],cinzel:['"Cinzel"','serif'],zh:['"Noto Serif TC"','serif']}}}}
 </script>
 <link rel="stylesheet" href="style.css">
+<style>
+/* 未登入時隱藏整個 layout */
+#admin-layout { display: none; }
+</style>
 </head>
-<body class="bg-bk text-white flex min-h-screen" style="-webkit-font-smoothing:antialiased">
+<body class="bg-bk text-white min-h-screen" style="-webkit-font-smoothing:antialiased">
 
-<!-- ADMIN GATE -->
+<!-- GATE：全螢幕，登入後消失 -->
 <div id="admin-gate" class="fixed inset-0 bg-bk flex items-center justify-center z-50">
   <div class="text-center w-80">
     <span class="font-cinzel text-gold opacity-70 mb-3 block text-[9px]" style="letter-spacing:.4em">ADMIN ACCESS</span>
     <h1 class="font-serif font-light text-white mb-7" style="font-size:36px">後台管理</h1>
     <input id="admin-pw" type="password" placeholder="管理員密碼"
-           class="w-full bg-white/4 border border-gold/15 text-white font-zh text-[15px] text-center px-4 py-3 outline-none transition-colors focus:border-gold/40 mb-2"
+           class="w-full border border-gold/15 text-white font-zh text-[15px] text-center px-4 py-3 outline-none transition-colors focus:border-gold/40 mb-2"
            style="background:rgba(255,255,255,.04);letter-spacing:.1em">
     <p id="admin-err" class="text-red-500 font-zh text-[12px] h-4 mb-3 opacity-0 transition-opacity"></p>
     <button onclick="adminLogin()"
@@ -28,264 +32,226 @@ tailwind.config={theme:{extend:{colors:{gold:'#C9A84C','gold-l':'#E8C97A',bk:'#0
   </div>
 </div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-  <div class="px-6 py-7 border-b border-gold/10">
-    <span class="font-cinzel text-gold text-sm block mb-1" style="letter-spacing:.3em">SUN9 ADMIN</span>
-    <span class="font-zh font-light text-white/28 text-[10px]" style="letter-spacing:.1em">內容管理系統</span>
-  </div>
-  <nav class="flex-1 py-4 overflow-y-auto">
-    <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">概覽</p>
-    <a class="sb-item active" onclick="showPanel('dashboard',event)"><span class="opacity-60">◈</span>儀表板</a>
-    <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">內容管理</p>
-    <a class="sb-item" onclick="showPanel('content-mgr',event)"><span class="opacity-60">✎</span>文字內容</a>
-    <a class="sb-item" onclick="showPanel('media',event)"><span class="opacity-60">⬚</span>圖片管理</a>
-    <a class="sb-item" onclick="showPanel('video',event)"><span class="opacity-60">▷</span>影片管理</a>
-    <a class="sb-item" onclick="showPanel('portfolio',event)"><span class="opacity-60">◇</span>Portfolio</a>
-    <a class="sb-item" onclick="showPanel('showcase',event)"><span class="opacity-60">✦</span>實績單元</a>
-    <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">圈子管理</p>
-    <a class="sb-item" onclick="showPanel('circle',event)"><span class="opacity-60">◉</span>小圈子內容</a>
-    <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">系統設定</p>
-    <a class="sb-item" onclick="showPanel('password',event)"><span class="opacity-60">⚿</span>密碼管理</a>
-    <a class="sb-item" onclick="showPanel('database',event)"><span class="opacity-60">⛁</span>資料庫</a>
-  </nav>
-  <div class="px-6 py-5 border-t border-gold/10 space-y-2">
-    <p class="font-zh font-light text-white/28 text-[11px]" style="letter-spacing:.07em">管理員：麥大哥</p>
-    <a href="index.html" class="block w-full font-cinzel text-[9px] text-gold border border-gold/28 py-2 text-center no-underline hover:bg-gold/10 transition-all" style="letter-spacing:.2em">← 回前台首頁</a>
-    <button onclick="showPanel('dashboard',event)" class="w-full font-cinzel text-[9px] text-white/28 border border-gold/10 py-2 cursor-pointer hover:text-gold hover:border-gold/28 transition-all" style="background:none;letter-spacing:.2em">⌂ 回後台首頁</button>
-    <button onclick="adminLogout()" class="w-full font-cinzel text-[9px] text-white/28 border border-gold/10 py-2 cursor-pointer hover:text-gold hover:border-gold/28 transition-all" style="background:none;letter-spacing:.2em">登出後台</button>
-  </div>
-</aside>
+<!-- LAYOUT：登入後才顯示 -->
+<div id="admin-layout" class="flex min-h-screen">
 
-<!-- MAIN -->
-<div class="ml-[220px] flex-1 flex flex-col min-h-screen">
-  <!-- Topbar -->
-  <div class="bg-bk-2 border-b border-gold/10 px-9 py-4 flex justify-between items-center sticky top-0 z-40">
-    <span id="topbar-title" class="font-serif font-light text-white text-[22px]">儀表板</span>
-    <span class="font-cinzel text-[8px] text-bk bg-gold px-3 py-1" style="letter-spacing:.22em">ADMIN</span>
-  </div>
-
-  <div class="p-9 flex-1">
-
-    <!-- DASHBOARD -->
-    <div class="panel active" id="panel-dashboard">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-9">
-        <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors">
-          <span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">3</span>
-          <span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">Portfolio 品牌</span>
-          <span class="font-cinzel text-green-500 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(39,174,96,.15);letter-spacing:.15em">運作中</span>
-        </div>
-        <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors">
-          <span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">6</span>
-          <span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">實績展示項目</span>
-          <span class="font-cinzel text-red-400 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待補影片</span>
-        </div>
-        <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors">
-          <span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">2</span>
-          <span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">已上傳照片</span>
-          <span class="font-cinzel text-green-500 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(39,174,96,.15);letter-spacing:.15em">CDN 已就緒</span>
-        </div>
-        <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors">
-          <span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">✓</span>
-          <span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">Supabase 連線</span>
-          <span class="font-cinzel text-green-500 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(39,174,96,.15);letter-spacing:.15em">正常</span>
-        </div>
-      </div>
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <h3 class="font-serif font-light text-white mb-5 pb-4 border-b border-gold/10" style="font-size:20px">快速操作</h3>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <button onclick="showPanel('content-mgr',event)" class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">✎ 編輯文案</button>
-          <button onclick="showPanel('media',event)"       class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">⬚ 上傳圖片</button>
-          <button onclick="showPanel('video',event)"       class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">▷ 上傳影片</button>
-          <button onclick="showPanel('portfolio',event)"   class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">◇ Portfolio</button>
-          <button onclick="showPanel('circle',event)"      class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">◉ 小圈子</button>
-          <button onclick="showPanel('password',event)"    class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">⚿ 密碼</button>
-        </div>
-      </div>
-      <div class="bg-bk-3 border border-gold/10 p-7">
-        <h3 class="font-serif font-light text-white mb-5 pb-4 border-b border-gold/10" style="font-size:20px">待辦事項</h3>
-        <table class="w-full">
-          <thead><tr>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">項目</th>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">狀態</th>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">說明</th>
-          </tr></thead>
-          <tbody>
-            <tr class="hover:bg-bk-4 transition-colors"><td class="font-zh font-light text-white/55 text-[13px] py-3 border-b border-white/4">K-POP 活動影片</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待上傳</span></td><td class="font-zh font-light text-white/28 text-[12px] py-3 border-b border-white/4">快閃店現場影片</td></tr>
-            <tr class="hover:bg-bk-4 transition-colors"><td class="font-zh font-light text-white/55 text-[13px] py-3 border-b border-white/4">AI 系統展示影片</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待上傳</span></td><td class="font-zh font-light text-white/28 text-[12px] py-3 border-b border-white/4">AI 自動化系統示範</td></tr>
-            <tr class="hover:bg-bk-4 transition-colors"><td class="font-zh font-light text-white/55 text-[13px] py-3">更多活動照片</td><td class="py-3"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待提供</span></td><td class="font-zh font-light text-white/28 text-[12px] py-3">K-POP 現場照片補充</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="px-6 py-7 border-b border-gold/10">
+      <span class="font-cinzel text-gold text-sm block mb-1" style="letter-spacing:.3em">SUN9 ADMIN</span>
+      <span class="font-zh font-light text-white/28 text-[10px]" style="letter-spacing:.1em">內容管理系統</span>
     </div>
+    <nav class="flex-1 py-4 overflow-y-auto">
+      <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">概覽</p>
+      <a class="sb-item active" onclick="showPanel('dashboard',event)"><span class="opacity-60">◈</span>儀表板</a>
+      <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">內容管理</p>
+      <a class="sb-item" onclick="showPanel('content-mgr',event)"><span class="opacity-60">✎</span>文字內容</a>
+      <a class="sb-item" onclick="showPanel('media',event)"><span class="opacity-60">⬚</span>圖片管理</a>
+      <a class="sb-item" onclick="showPanel('video',event)"><span class="opacity-60">▷</span>影片管理</a>
+      <a class="sb-item" onclick="showPanel('portfolio',event)"><span class="opacity-60">◇</span>Portfolio</a>
+      <a class="sb-item" onclick="showPanel('showcase',event)"><span class="opacity-60">✦</span>實績單元</a>
+      <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">圈子管理</p>
+      <a class="sb-item" onclick="showPanel('circle',event)"><span class="opacity-60">◉</span>小圈子內容</a>
+      <p class="font-cinzel text-white/28 text-[8px] px-6 pt-4 pb-2" style="letter-spacing:.3em">系統設定</p>
+      <a class="sb-item" onclick="showPanel('password',event)"><span class="opacity-60">⚿</span>密碼管理</a>
+      <a class="sb-item" onclick="showPanel('database',event)"><span class="opacity-60">⛁</span>資料庫</a>
+    </nav>
+    <div class="px-6 py-5 border-t border-gold/10 space-y-2">
+      <p class="font-zh font-light text-white/28 text-[11px]" style="letter-spacing:.07em">管理員：麥大哥</p>
+      <a href="index.html" class="block w-full font-cinzel text-[9px] text-gold border border-gold/28 py-2 text-center no-underline hover:bg-gold/10 transition-all" style="letter-spacing:.2em">← 回前台首頁</a>
+      <button onclick="showPanel('dashboard',event)" class="w-full font-cinzel text-[9px] text-white/28 border border-gold/10 py-2 cursor-pointer hover:text-gold hover:border-gold/28 transition-all" style="background:none;letter-spacing:.2em">⌂ 回後台首頁</button>
+      <button onclick="adminLogout()" class="w-full font-cinzel text-[9px] text-white/28 border border-gold/10 py-2 cursor-pointer hover:text-gold hover:border-gold/28 transition-all" style="background:none;letter-spacing:.2em">登出後台</button>
+    </div>
+  </aside>
 
-    <!-- TEXT CONTENT -->
-    <div class="panel" id="panel-content-mgr">
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10 flex justify-between" style="font-size:20px">Hero 區塊文案</h3>
-        <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">主標題第一行</label><input class="form-input" value="真正的差距"></div>
-        <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">主標題第二行</label><input class="form-input" value="在於誰能把流量，變成資本"></div>
-        <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">副標題</label><textarea class="form-input">Sun9 Group 以 AIP 系統
+  <!-- MAIN -->
+  <div class="ml-[220px] flex-1 flex flex-col min-h-screen">
+    <div class="bg-bk-2 border-b border-gold/10 px-9 py-4 flex justify-between items-center sticky top-0 z-40">
+      <span id="topbar-title" class="font-serif font-light text-white text-[22px]">儀表板</span>
+      <span class="font-cinzel text-[8px] text-bk bg-gold px-3 py-1" style="letter-spacing:.22em">ADMIN</span>
+    </div>
+    <div class="p-9 flex-1">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-9">
+          <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors"><span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">3</span><span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">Portfolio 品牌</span><span class="font-cinzel text-green-500 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(39,174,96,.15);letter-spacing:.15em">運作中</span></div>
+          <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors"><span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">6</span><span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">實績展示項目</span><span class="font-cinzel text-red-400 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待補影片</span></div>
+          <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors"><span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">2</span><span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">已上傳照片</span><span class="font-cinzel text-green-500 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(39,174,96,.15);letter-spacing:.15em">CDN 已就緒</span></div>
+          <div class="bg-bk-3 border border-gold/10 p-6 hover:border-gold/28 transition-colors"><span class="font-serif font-light text-gold block leading-none mb-2" style="font-size:36px">✓</span><span class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.07em">Supabase 連線</span><span class="font-cinzel text-green-500 text-[8px] block mt-2 px-2 py-1 inline-block" style="background:rgba(39,174,96,.15);letter-spacing:.15em">正常</span></div>
+        </div>
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
+          <h3 class="font-serif font-light text-white mb-5 pb-4 border-b border-gold/10" style="font-size:20px">快速操作</h3>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <button onclick="showPanel('content-mgr',event)" class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">✎ 編輯文案</button>
+            <button onclick="showPanel('media',event)"       class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">⬚ 上傳圖片</button>
+            <button onclick="showPanel('video',event)"       class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">▷ 上傳影片</button>
+            <button onclick="showPanel('portfolio',event)"   class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">◇ Portfolio</button>
+            <button onclick="showPanel('circle',event)"      class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">◉ 小圈子</button>
+            <button onclick="showPanel('password',event)"    class="font-cinzel text-[9px] text-gold border border-gold/28 py-3 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">⚿ 密碼</button>
+          </div>
+        </div>
+        <div class="bg-bk-3 border border-gold/10 p-7">
+          <h3 class="font-serif font-light text-white mb-5 pb-4 border-b border-gold/10" style="font-size:20px">待辦事項</h3>
+          <table class="w-full"><thead><tr><th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">項目</th><th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">狀態</th><th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">說明</th></tr></thead><tbody><tr class="hover:bg-bk-4 transition-colors"><td class="font-zh font-light text-white/55 text-[13px] py-3 border-b border-white/4">K-POP 活動影片</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待上傳</span></td><td class="font-zh font-light text-white/28 text-[12px] py-3 border-b border-white/4">快閃店現場影片</td></tr><tr class="hover:bg-bk-4 transition-colors"><td class="font-zh font-light text-white/55 text-[13px] py-3 border-b border-white/4">AI 系統展示影片</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待上傳</span></td><td class="font-zh font-light text-white/28 text-[12px] py-3 border-b border-white/4">AI 自動化系統示範</td></tr><tr class="hover:bg-bk-4 transition-colors"><td class="font-zh font-light text-white/55 text-[13px] py-3">更多活動照片</td><td class="py-3"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待提供</span></td><td class="font-zh font-light text-white/28 text-[12px] py-3">K-POP 現場照片補充</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- TEXT CONTENT -->
+      <div class="panel" id="panel-content-mgr">
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
+          <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">Hero 區塊文案</h3>
+          <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">主標題第一行</label><input class="form-input" value="真正的差距"></div>
+          <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">主標題第二行（流量部分）</label><input class="form-input" value="在於誰能把流量，變成資本"></div>
+          <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">副標題</label><textarea class="form-input">Sun9 Group 以 AIP 系統
 重構 AI × 流量 × 資本的運作方式</textarea></div>
-        <button onclick="toast('✓ Hero 文案已儲存')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">儲存變更</button>
-      </div>
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">Founder 介紹文案</h3>
-        <div class="grid grid-cols-2 gap-4 mb-5">
-          <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">姓名</label><input class="form-input" value="麥大哥"></div>
-          <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">職稱</label><input class="form-input" value="AI 商業操盤者 · 新媒體流量策略顧問"></div>
+          <button onclick="toast('✓ Hero 文案已儲存')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">儲存變更</button>
         </div>
-        <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">介紹內容</label><textarea class="form-input" style="min-height:120px">逾 25 年商業實戰與創業經驗...</textarea></div>
-        <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">座右銘</label><input class="form-input" value="商業，不該只靠運氣"></div>
-        <button onclick="toast('✓ Founder 文案已儲存')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">儲存變更</button>
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
+          <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">Founder 介紹文案</h3>
+          <div class="grid grid-cols-2 gap-4 mb-5"><div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">姓名</label><input class="form-input" value="麥大哥"></div><div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">職稱</label><input class="form-input" value="AI 商業操盤者 · 新媒體流量策略顧問"></div></div>
+          <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">介紹內容</label><textarea class="form-input" style="min-height:120px">逾 25 年商業實戰與創業經驗...</textarea></div>
+          <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">座右銘</label><input class="form-input" value="商業，不該只靠運氣"></div>
+          <button onclick="toast('✓ Founder 文案已儲存')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">儲存變更</button>
+        </div>
       </div>
-    </div>
 
-    <!-- MEDIA -->
-    <div class="panel" id="panel-media">
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gold/10">
-          <h3 class="font-serif font-light text-white" style="font-size:20px">Supabase Storage 圖片</h3>
-          <a href="https://supabase.com/dashboard/project/sdjqekzcqmohxslvzsgi/storage/buckets/images" target="_blank" class="font-cinzel text-[9px] text-gold border border-gold/28 px-4 py-2 no-underline hover:bg-gold/10 transition-all" style="letter-spacing:.2em">開啟 Storage →</a>
-        </div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div class="border border-gold/15 overflow-hidden" style="aspect-ratio:1">
-            <img src="https://sdjqekzcqmohxslvzsgi.supabase.co/storage/v1/object/public/images/founder-edinburgh.jpg" alt="Edinburgh" class="w-full h-full object-cover" style="filter:brightness(.85)">
+      <!-- MEDIA -->
+      <div class="panel" id="panel-media">
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
+          <div class="flex justify-between items-center mb-6 pb-4 border-b border-gold/10">
+            <h3 class="font-serif font-light text-white" style="font-size:20px">Supabase Storage 圖片</h3>
+            <a href="https://supabase.com/dashboard/project/sdjqekzcqmohxslvzsgi/storage/buckets/images" target="_blank" class="font-cinzel text-[9px] text-gold border border-gold/28 px-4 py-2 no-underline hover:bg-gold/10 transition-all" style="letter-spacing:.2em">開啟 Storage →</a>
           </div>
-          <div class="border border-gold/15 overflow-hidden" style="aspect-ratio:1">
-            <img src="https://sdjqekzcqmohxslvzsgi.supabase.co/storage/v1/object/public/images/founder-workshop.jpg" alt="Workshop" class="w-full h-full object-cover" style="filter:brightness(.85)">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="border border-gold/15 overflow-hidden" style="aspect-ratio:1"><img src="https://sdjqekzcqmohxslvzsgi.supabase.co/storage/v1/object/public/images/founder-edinburgh.jpg" alt="Edinburgh" class="w-full h-full object-cover" style="filter:brightness(.85)"></div>
+            <div class="border border-gold/15 overflow-hidden" style="aspect-ratio:1"><img src="https://sdjqekzcqmohxslvzsgi.supabase.co/storage/v1/object/public/images/founder-workshop.jpg" alt="Workshop" class="w-full h-full object-cover" style="filter:brightness(.85)"></div>
+            <div class="border border-dashed border-gold/28 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-gold/5 transition-colors" style="aspect-ratio:1"><span class="text-gold opacity-50 text-2xl">+</span><span class="font-cinzel text-white/28 text-[9px]" style="letter-spacing:.2em">上傳圖片</span></div>
           </div>
-          <div class="border border-dashed border-gold/28 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-gold/5 transition-colors" style="aspect-ratio:1">
-            <span class="text-gold opacity-50 text-2xl">+</span>
-            <span class="font-cinzel text-white/28 text-[9px]" style="letter-spacing:.2em">上傳圖片</span>
-          </div>
-        </div>
-        <p class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.05em">
-          圖片儲存於 Supabase Storage，請至 Supabase Dashboard → Storage → images bucket 直接上傳或刪除。<br>
-          上傳後刷新網站即可自動生效，無需修改程式碼。
-        </p>
-      </div>
-    </div>
-
-    <!-- VIDEO -->
-    <div class="panel" id="panel-video">
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">影片管理</h3>
-        <table class="w-full mb-6">
-          <thead><tr>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">區塊</th>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">狀態</th>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">操作</th>
-          </tr></thead>
-          <tbody>
-            <tr class="hover:bg-bk-4"><td class="font-zh font-light text-white/55 text-[13px] py-3 border-b border-white/4">K-POP 快閃活動（大卡）</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待設定</span></td><td class="py-3 border-b border-white/4"><button onclick="toast('請填入下方影片連結')" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">設定</button></td></tr>
-            <tr class="hover:bg-bk-4"><td class="font-zh font-light text-white/55 text-[13px] py-3 border-b border-white/4">AI 系統展示（大卡）</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">待設定</span></td><td class="py-3 border-b border-white/4"><button onclick="toast('請填入下方影片連結')" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">設定</button></td></tr>
-          </tbody>
-        </table>
-        <div class="border-t border-gold/10 pt-6">
-          <h4 class="font-cinzel text-gold opacity-70 mb-4 text-[9px]" style="letter-spacing:.25em">新增影片連結</h4>
-          <div class="grid grid-cols-2 gap-4 mb-4">
-            <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">選擇區塊</label><select class="form-input"><option>K-POP 快閃活動</option><option>AI 系統展示</option></select></div>
-            <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">來源</label><select class="form-input"><option>YouTube 嵌入連結</option><option>Vimeo 嵌入連結</option><option>Supabase Storage MP4</option></select></div>
-          </div>
-          <div class="mb-4"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">影片 URL</label><input class="form-input" placeholder="https://www.youtube.com/watch?v=..."></div>
-          <button onclick="toast('✓ 影片已設定')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">儲存影片設定</button>
+          <p class="font-zh font-light text-white/28 text-[12px]" style="letter-spacing:.05em">至 Supabase Dashboard → Storage → images bucket 上傳，刷新網站即生效。</p>
         </div>
       </div>
-    </div>
 
-    <!-- PORTFOLIO -->
-    <div class="panel" id="panel-portfolio">
-      <div class="bg-bk-3 border border-gold/10 p-7">
-        <div class="flex justify-between items-center mb-6 pb-4 border-b border-gold/10">
-          <h3 class="font-serif font-light text-white" style="font-size:20px">Portfolio 品牌管理</h3>
-          <button onclick="toast('新增品牌功能開發中')" class="font-cinzel text-[9px] text-gold border border-gold/28 px-4 py-2 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">+ 新增</button>
-        </div>
-        <div class="space-y-4">
-          <div class="border border-gold/10 p-6">
-            <div class="flex justify-between items-center mb-4"><span class="font-cinzel text-gold text-[11px]" style="letter-spacing:.2em">TDK · TRAFFIC BRAND</span><button onclick="toast('✓ 已儲存')" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">儲存</button></div>
+      <!-- VIDEO -->
+      <div class="panel" id="panel-video">
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
+          <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">影片管理</h3>
+          <div class="border-t border-gold/10 pt-6">
             <div class="grid grid-cols-2 gap-4 mb-4">
-              <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">名稱</label><input class="form-input" value="TDK"></div>
-              <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">標籤</label><input class="form-input" value="TRAFFIC BRAND"></div>
+              <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">選擇區塊</label><select class="form-input"><option>K-POP 快閃活動</option><option>AI 系統展示</option></select></div>
+              <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">來源</label><select class="form-input"><option>YouTube 嵌入連結</option><option>Vimeo 嵌入連結</option><option>Supabase Storage MP4</option></select></div>
             </div>
-            <div class="mb-4"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">描述</label><textarea class="form-input">K-pop 流量品牌，線上 × 線下擴散系統</textarea></div>
-            <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">細節</label><input class="form-input" value="快閃店 · 社群矩陣 · 會員生態"></div>
+            <div class="mb-4"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">影片 URL</label><input class="form-input" placeholder="https://www.youtube.com/watch?v=..."></div>
+            <button onclick="toast('✓ 影片已設定')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">儲存影片設定</button>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- SHOWCASE -->
-    <div class="panel" id="panel-showcase">
-      <div class="bg-bk-3 border border-gold/10 p-7">
-        <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">實績單元管理</h3>
-        <table class="w-full">
-          <thead><tr>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">區塊</th>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">標題</th>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">類型</th>
-            <th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">操作</th>
-          </tr></thead>
-          <tbody>
-            <tr class="hover:bg-bk-4"><td class="font-zh text-white/55 text-[13px] py-3 border-b border-white/4">大卡左上</td><td class="font-zh text-white/55 text-[13px] py-3 border-b border-white/4">快閃活動現場紀錄</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">影片待上傳</span></td><td class="py-3 border-b border-white/4"><button onclick="showPanel('video',event)" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">設定影片</button></td></tr>
-            <tr class="hover:bg-bk-4"><td class="font-zh text-white/55 text-[13px] py-3 border-b border-white/4">小卡右上1</td><td class="font-zh text-white/55 text-[13px] py-3 border-b border-white/4">麥大哥 · 國際場合</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-green-500 px-2 py-1" style="background:rgba(39,174,96,.15);letter-spacing:.15em">CDN 照片</span></td><td class="py-3 border-b border-white/4"><a href="https://supabase.com/dashboard/project/sdjqekzcqmohxslvzsgi/storage/buckets/images" target="_blank" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 no-underline hover:bg-gold/10 transition-all" style="letter-spacing:.2em">換圖</a></td></tr>
-            <tr class="hover:bg-bk-4"><td class="font-zh text-white/55 text-[13px] py-3">大卡右下</td><td class="font-zh text-white/55 text-[13px] py-3">AI 商業自動化</td><td class="py-3"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">影片待上傳</span></td><td class="py-3"><button onclick="showPanel('video',event)" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">設定影片</button></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- CIRCLE -->
-    <div class="panel" id="panel-circle">
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">小圈子公告</h3>
-        <div class="mb-4"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">標題</label><input class="form-input" placeholder="公告標題"></div>
-        <div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">內容</label><textarea class="form-input" style="min-height:120px" placeholder="輸入要對小圈子成員顯示的最新消息..."></textarea></div>
-        <button onclick="toast('✓ 公告已發布')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">發布公告</button>
-      </div>
-    </div>
-
-    <!-- PASSWORD -->
-    <div class="panel" id="panel-password">
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">小圈子密碼管理</h3>
-        <p class="font-zh font-light text-white/55 text-[13px] mb-6 leading-loose" style="letter-spacing:.05em">密碼儲存於 Supabase → <code class="bg-gold/10 text-gold-l px-2 py-1 font-mono text-[12px]">circle_access</code> 表，修改後即時生效。</p>
-        <div class="grid grid-cols-3 gap-4 mb-5">
-          <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">目前密碼</label><input class="form-input" type="password" placeholder="••••••••"></div>
-          <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">新密碼</label><input class="form-input" type="password" placeholder="••••••••" id="new-circle-pw"></div>
-          <div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">確認新密碼</label><input class="form-input" type="password" placeholder="••••••••"></div>
+      <!-- PORTFOLIO -->
+      <div class="panel" id="panel-portfolio">
+        <div class="bg-bk-3 border border-gold/10 p-7">
+          <div class="flex justify-between items-center mb-6 pb-4 border-b border-gold/10"><h3 class="font-serif font-light text-white" style="font-size:20px">Portfolio 品牌管理</h3></div>
+          <div class="space-y-4">
+            <div class="border border-gold/10 p-6"><div class="flex justify-between items-center mb-4"><span class="font-cinzel text-gold text-[11px]" style="letter-spacing:.2em">TDK · TRAFFIC BRAND</span><button onclick="toast('✓ 已儲存')" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">儲存</button></div><div class="grid grid-cols-2 gap-4 mb-4"><div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">名稱</label><input class="form-input" value="TDK"></div><div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">標籤</label><input class="form-input" value="TRAFFIC BRAND"></div></div><div class="mb-4"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">描述</label><textarea class="form-input">K-pop 流量品牌，線上 × 線下擴散系統</textarea></div></div>
+          </div>
         </div>
-        <button onclick="toast('✓ 密碼已更新')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">更新密碼</button>
       </div>
-    </div>
 
-    <!-- DATABASE -->
-    <div class="panel" id="panel-database">
-      <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
-        <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">Supabase 資料庫資訊</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">PROJECT</span><p class="font-zh font-light text-white/55 text-[13px]">sun9-group</p></div>
-          <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">REGION</span><p class="font-zh font-light text-white/55 text-[13px]">Singapore (ap-southeast-1)</p></div>
-          <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">STATUS</span><p class="font-zh font-light text-green-500 text-[13px]">ACTIVE_HEALTHY ✓</p></div>
-          <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">STORAGE</span><p class="font-zh font-light text-white/55 text-[13px]">2 images · videos bucket 已建立</p></div>
+      <!-- SHOWCASE -->
+      <div class="panel" id="panel-showcase">
+        <div class="bg-bk-3 border border-gold/10 p-7"><h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">實績單元管理</h3><table class="w-full"><thead><tr><th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">區塊</th><th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">類型</th><th class="font-cinzel text-gold opacity-65 text-[9px] text-left pb-3 border-b border-gold/10" style="letter-spacing:.25em">操作</th></tr></thead><tbody><tr class="hover:bg-bk-4"><td class="font-zh text-white/55 text-[13px] py-3 border-b border-white/4">快閃活動現場</td><td class="py-3 border-b border-white/4"><span class="font-cinzel text-[7px] text-red-400 px-2 py-1" style="background:rgba(192,57,43,.15);letter-spacing:.15em">影片待上傳</span></td><td class="py-3 border-b border-white/4"><button onclick="showPanel('video',event)" class="font-cinzel text-[9px] text-gold border border-gold/28 px-3 py-1 cursor-pointer hover:bg-gold/10 transition-all" style="background:none;letter-spacing:.2em">設定影片</button></td></tr></tbody></table></div>
+      </div>
+
+      <!-- CIRCLE -->
+      <div class="panel" id="panel-circle">
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6"><h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">小圈子公告</h3><div class="mb-4"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">標題</label><input class="form-input" placeholder="公告標題"></div><div class="mb-5"><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">內容</label><textarea class="form-input" style="min-height:120px" placeholder="輸入要對小圈子成員顯示的最新消息..."></textarea></div><button onclick="toast('✓ 公告已發布')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">發布公告</button></div>
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="panel" id="panel-password">
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
+          <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">密碼管理</h3>
+          <div class="grid grid-cols-2 gap-6 mb-8">
+            <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">後台管理員密碼</span><p class="font-zh font-light text-white/55 text-[13px] mb-1">目前密碼：<code class="bg-gold/10 text-gold-l px-2 py-1 font-mono text-[12px]">sun9admin2025</code></p><p class="font-zh font-light text-white/28 text-[11px]">建議儘快修改</p></div>
+            <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">小圈子密碼</span><p class="font-zh font-light text-white/55 text-[13px] mb-1">目前密碼：<code class="bg-gold/10 text-gold-l px-2 py-1 font-mono text-[12px]">sun9circle</code></p><p class="font-zh font-light text-white/28 text-[11px]">儲存於 Supabase circle_access 表</p></div>
+          </div>
+          <div class="grid grid-cols-3 gap-4 mb-5"><div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">目前密碼</label><input class="form-input" type="password" placeholder="••••••••"></div><div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">新密碼</label><input class="form-input" type="password" placeholder="••••••••"></div><div><label class="font-cinzel text-gold opacity-70 mb-2 block text-[9px]" style="letter-spacing:.25em">確認新密碼</label><input class="form-input" type="password" placeholder="••••••••"></div></div>
+          <button onclick="toast('✓ 密碼已更新')" class="font-cinzel text-[10px] text-bk bg-gold px-8 py-3 border-none cursor-pointer hover:bg-gold-l transition-all" style="letter-spacing:.22em">更新後台密碼</button>
         </div>
-        <a href="https://supabase.com/dashboard/project/sdjqekzcqmohxslvzsgi" target="_blank" class="font-cinzel text-[10px] text-gold border border-gold/28 px-8 py-3 no-underline hover:bg-gold/10 transition-all inline-block" style="letter-spacing:.22em">開啟 Supabase Dashboard →</a>
       </div>
-    </div>
 
+      <!-- DATABASE -->
+      <div class="panel" id="panel-database">
+        <div class="bg-bk-3 border border-gold/10 p-7 mb-6">
+          <h3 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:20px">Supabase 資料庫資訊</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">PROJECT</span><p class="font-zh font-light text-white/55 text-[13px]">sun9-group</p></div>
+            <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">REGION</span><p class="font-zh font-light text-white/55 text-[13px]">Singapore (ap-southeast-1)</p></div>
+            <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">STATUS</span><p class="font-zh font-light text-green-500 text-[13px]">ACTIVE_HEALTHY ✓</p></div>
+            <div class="border border-gold/10 p-5"><span class="font-cinzel text-gold opacity-65 mb-2 block text-[9px]" style="letter-spacing:.3em">STORAGE</span><p class="font-zh font-light text-white/55 text-[13px]">2 images · videos bucket 已建立</p></div>
+          </div>
+          <a href="https://supabase.com/dashboard/project/sdjqekzcqmohxslvzsgi" target="_blank" class="font-cinzel text-[10px] text-gold border border-gold/28 px-8 py-3 no-underline hover:bg-gold/10 transition-all inline-block" style="letter-spacing:.22em">開啟 Supabase Dashboard →</a>
+        </div>
+      </div>
+
+    </div>
   </div>
-</div>
+</div><!-- /admin-layout -->
 
 <div id="toast">✓ 已儲存</div>
 
 <script>
-const ADMIN_PW='sun9admin2025';
-function adminLogin(){const v=document.getElementById('admin-pw').value,err=document.getElementById('admin-err');if(v===ADMIN_PW){sessionStorage.setItem('admin_auth','1');document.getElementById('admin-gate').style.display='none';err.style.opacity='0';}else{err.textContent='密碼錯誤';err.style.opacity='1';setTimeout(()=>err.style.opacity='0',2000);}}
-function adminLogout(){sessionStorage.removeItem('admin_auth');location.reload();}
-document.getElementById('admin-pw').addEventListener('keydown',e=>{if(e.key==='Enter')adminLogin();});
-if(sessionStorage.getItem('admin_auth')==='1')document.getElementById('admin-gate').style.display='none';
-function showPanel(id,e){if(e)e.preventDefault();document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sb-item').forEach(a=>a.classList.remove('active'));const p=document.getElementById('panel-'+id);if(p)p.classList.add('active');if(e&&e.currentTarget)e.currentTarget.classList.add('active');const t={dashboard:'儀表板','content-mgr':'文字內容',media:'圖片管理',video:'影片管理',portfolio:'Portfolio 管理',showcase:'實績單元',circle:'小圈子管理',password:'密碼管理',database:'資料庫資訊'};document.getElementById('topbar-title').textContent=t[id]||id;}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+const ADMIN_PW = 'sun9admin2025';
+
+function adminLogin() {
+  const v = document.getElementById('admin-pw').value;
+  const err = document.getElementById('admin-err');
+  if (v === ADMIN_PW) {
+    sessionStorage.setItem('admin_auth', '1');
+    document.getElementById('admin-gate').style.display = 'none';
+    document.getElementById('admin-layout').style.display = 'flex';
+    err.style.opacity = '0';
+  } else {
+    err.textContent = '密碼錯誤';
+    err.style.opacity = '1';
+    setTimeout(() => err.style.opacity = '0', 2000);
+  }
+}
+
+function adminLogout() {
+  sessionStorage.removeItem('admin_auth');
+  document.getElementById('admin-layout').style.display = 'none';
+  document.getElementById('admin-gate').style.display = 'flex';
+  document.getElementById('admin-pw').value = '';
+}
+
+document.getElementById('admin-pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') adminLogin();
+});
+
+// 檢查 session，已登入則直接顯示後台
+if (sessionStorage.getItem('admin_auth') === '1') {
+  document.getElementById('admin-gate').style.display = 'none';
+  document.getElementById('admin-layout').style.display = 'flex';
+}
+
+function showPanel(id, e) {
+  if (e) e.preventDefault();
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(a => a.classList.remove('active'));
+  const p = document.getElementById('panel-' + id);
+  if (p) p.classList.add('active');
+  if (e && e.currentTarget) e.currentTarget.classList.add('active');
+  const titles = { dashboard:'儀表板','content-mgr':'文字內容',media:'圖片管理',video:'影片管理',portfolio:'Portfolio 管理',showcase:'實績單元',circle:'小圈子管理',password:'密碼管理',database:'資料庫資訊' };
+  document.getElementById('topbar-title').textContent = titles[id] || id;
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
 </script>
 </body>
 </html>

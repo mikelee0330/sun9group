@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Sun9 Group · AI-Driven Investment & Resource Platform</title>
+<meta name="description" content="Sun9 Group — where traffic becomes capital through AI, traffic systems, and intelligent investment.">
+<link rel="alternate" hreflang="zh" href="index.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{gold:'#C9A84C','gold-l':'#E8C97A',bk:'#070707','bk-2':'#0D0D0D','bk-3':'#111111'},fontFamily:{serif:['"Cormorant Garamond"','Georgia','serif'],cinzel:['"Cinzel"','serif'],playfair:['"Playfair Display"','Georgia','serif']}}}}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-bk text-white" style="-webkit-font-smoothing:antialiased;overflow-x:hidden">
+
+<!-- NAV -->
+<nav class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-12 py-6" style="background:linear-gradient(to bottom,rgba(7,7,7,.97),transparent);backdrop-filter:blur(3px)">
+  <a href="en.html" class="font-cinzel text-gold text-lg no-underline flex-shrink-0" style="letter-spacing:.32em">SUN9</a>
+  <ul class="nav-links">
+    <li><a onclick="smoothTo('en-about',event)"   class="font-playfair text-[15px] font-light text-white/60 no-underline hover:text-gold transition-colors cursor-pointer">About</a></li>
+    <li><a onclick="smoothTo('en-cap',event)"     class="font-playfair text-[15px] font-light text-white/60 no-underline hover:text-gold transition-colors cursor-pointer">Capabilities</a></li>
+    <li><a onclick="smoothTo('en-portfolio',event)" class="font-playfair text-[15px] font-light text-white/60 no-underline hover:text-gold transition-colors cursor-pointer">Portfolio</a></li>
+    <li><a onclick="smoothTo('en-founder',event)" class="font-playfair text-[15px] font-light text-white/60 no-underline hover:text-gold transition-colors cursor-pointer">Founder</a></li>
+    <li><a onclick="smoothTo('en-contact',event)" class="font-playfair text-[15px] font-light text-white/60 no-underline hover:text-gold transition-colors cursor-pointer">Contact</a></li>
+  </ul>
+  <a href="index.html" class="font-cinzel text-[10px] text-white/40 border border-gold/20 px-4 py-2 no-underline hover:text-gold hover:border-gold/50 transition-all flex-shrink-0" style="letter-spacing:.2em">中文</a>
+</nav>
+
+<!-- EN HERO -->
+<section id="en-hero" class="relative w-full h-screen overflow-hidden flex items-center justify-center">
+  <canvas id="c" class="absolute inset-0 w-full h-full block"></canvas>
+  <div class="hero-inner relative z-10 text-center px-10 max-w-4xl opacity-0 translate-y-7" style="animation:heroIn 1.6s cubic-bezier(.16,1,.3,1) .3s forwards">
+    <span class="font-cinzel text-gold text-[10px] opacity-70 mb-11 block" style="letter-spacing:.44em">SUN9 GROUP &nbsp;·&nbsp; AIP PLATFORM</span>
+    <h1 class="font-serif font-light text-white leading-[1.1]" style="font-size:clamp(52px,7.5vw,100px)">
+      Where <em class="text-gold-l" style="font-style:italic">Traffic</em><br>
+      Becomes Capital
+    </h1>
+    <p class="font-playfair italic text-white/55 leading-[2.1] mt-8 mb-12 mx-auto max-w-md" style="font-size:clamp(15px,1.6vw,18px)">
+      An AI-powered investment and resource platform<br>
+      integrating technology, traffic, and capital
+    </p>
+    <div class="flex gap-4 justify-center flex-wrap">
+      <a onclick="smoothTo('en-cap',event)"     class="font-cinzel text-[12px] text-bk bg-gold px-10 py-4 cursor-pointer no-underline transition-all hover:bg-gold-l hover:-translate-y-px" style="letter-spacing:.26em">Explore</a>
+      <a onclick="smoothTo('en-contact',event)" class="font-cinzel text-[12px] text-gold border border-gold/30 px-10 py-4 cursor-pointer no-underline transition-all hover:bg-gold/10 hover:border-gold" style="letter-spacing:.26em">Get In Touch</a>
+    </div>
+  </div>
+  <div class="scroll-indicator">
+    <div class="w-px h-11" style="background:linear-gradient(to bottom,#C9A84C,transparent)"></div>
+    <span class="font-cinzel text-gold text-[8px]" style="letter-spacing:.35em">SCROLL</span>
+  </div>
+</section>
+<div class="gold-divider"></div>
+
+<!-- ABOUT -->
+<section id="en-about" class="max-w-[1300px] mx-auto px-14 py-28">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+    <img data-img="workshop" src="" alt="Mike Lee" class="w-full rev" style="aspect-ratio:4/3;object-fit:cover;filter:grayscale(12%) brightness(.88)">
+    <div class="rev d1">
+      <span class="font-cinzel text-gold opacity-62 mb-5 block text-[10px]" style="letter-spacing:.44em">ABOUT SUN9</span>
+      <h2 class="font-serif font-light text-white leading-snug mb-6" style="font-size:clamp(32px,3.5vw,52px)">AI-Driven.<br><em class="text-gold-l" style="font-style:italic">System-Oriented.</em></h2>
+      <p class="font-playfair text-white/55 leading-relaxed mb-4 text-base">Sun9 Group is a technology and investment platform built on the intersection of AI, traffic systems, and intelligent capital deployment.</p>
+      <p class="font-playfair text-white/55 leading-relaxed text-base">We don't invest in isolated ideas — we build and back scalable systems. Every project is designed to grow, replicate, and compound.</p>
+      <div class="flex gap-12 mt-12 flex-wrap">
+        <div><span class="font-serif font-light text-gold block leading-none mb-1" style="font-size:52px">NT$35M</span><span class="font-playfair text-white/55 text-sm">Revenue in 4 months</span></div>
+        <div><span class="font-serif font-light text-gold block leading-none mb-1" style="font-size:52px">3+</span><span class="font-playfair text-white/55 text-sm">Portfolio Brands</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="gold-divider"></div>
+
+<!-- CAPABILITIES -->
+<section id="en-cap" class="max-w-[1300px] mx-auto px-14 py-28">
+  <span class="font-cinzel text-gold opacity-62 mb-4 block rev text-[10px]" style="letter-spacing:.44em">CAPABILITIES</span>
+  <h2 class="font-serif font-light text-white leading-snug mb-0 rev d1" style="font-size:clamp(32px,3.5vw,52px)">What We Bring</h2>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+    <div class="group relative bg-bk-3 p-10 overflow-hidden transition-colors duration-300 hover:bg-[#161616] rev d1"><div class="card-top-line"></div><span class="font-cinzel text-gold tracking-wider mb-3 block text-[11px]">AI ENGINE</span><h3 class="font-serif font-light text-white mb-3 text-[22px]">Artificial Intelligence</h3><p class="font-playfair text-white/55 leading-relaxed text-sm">AI-powered content, digital influencers, and decision automation — turning intelligence into competitive infrastructure.</p></div>
+    <div class="group relative bg-bk-3 p-10 overflow-hidden transition-colors duration-300 hover:bg-[#161616] rev d2"><div class="card-top-line"></div><span class="font-cinzel text-gold tracking-wider mb-3 block text-[11px]">TRAFFIC ENGINE</span><h3 class="font-serif font-light text-white mb-3 text-[22px]">Traffic Systems</h3><p class="font-playfair text-white/55 leading-relaxed text-sm">Multi-channel architecture including K-pop retail activations, short-form video matrix, and community conversion funnels.</p></div>
+    <div class="group relative bg-bk-3 p-10 overflow-hidden transition-colors duration-300 hover:bg-[#161616] rev d3"><div class="card-top-line"></div><span class="font-cinzel text-gold tracking-wider mb-3 block text-[11px]">CAPITAL ENGINE</span><h3 class="font-serif font-light text-white mb-3 text-[22px]">Smart Investment</h3><p class="font-playfair text-white/55 leading-relaxed text-sm">Strategic investment with revenue-sharing models, AI financial strategy, and scalable growth system design.</p></div>
+  </div>
+</section>
+<div class="gold-divider"></div>
+
+<!-- PORTFOLIO -->
+<section id="en-portfolio" class="max-w-[1300px] mx-auto px-14 py-28">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-end mb-16">
+    <div><span class="font-cinzel text-gold opacity-62 mb-5 block rev text-[10px]" style="letter-spacing:.44em">PORTFOLIO</span><h2 class="font-serif font-light text-white leading-snug rev d1" style="font-size:clamp(32px,3.5vw,52px)">Our Ecosystem<br><em class="text-gold-l" style="font-style:italic">We invest in systems</em></h2></div>
+    <p class="font-playfair text-white/55 leading-relaxed rev d2 text-base">Every brand in our portfolio carries a specific traffic logic and amplifies its commercial value together with the platform.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+    <div class="group relative border border-gold/10 p-10 overflow-hidden transition-colors duration-300 hover:border-gold/28 rev d1"><div class="card-bottom-line"></div><span class="font-cinzel text-gold opacity-60 mb-4 block" style="font-size:9px;letter-spacing:.3em">TRAFFIC BRAND</span><h3 class="font-serif font-light text-white mb-3 text-3xl">TDK</h3><p class="font-playfair text-white/55 leading-relaxed mb-5 text-sm">K-pop traffic brand with online × offline expansion systems.</p><p class="font-playfair text-white/28 text-xs" style="letter-spacing:.08em">Pop-up stores · Social matrix · Member ecosystem</p></div>
+    <div class="group relative border border-gold/10 p-10 overflow-hidden transition-colors duration-300 hover:border-gold/28 rev d2"><div class="card-bottom-line"></div><span class="font-cinzel text-gold opacity-60 mb-4 block" style="font-size:9px;letter-spacing:.3em">IP BRAND</span><h3 class="font-serif font-light text-white mb-3 text-3xl">Mike Lee</h3><p class="font-playfair text-white/55 leading-relaxed mb-5 text-sm">AI business system IP — content × education × model.</p><p class="font-playfair text-white/28 text-xs" style="letter-spacing:.08em">Personal brand · AI acquisition · Course systems</p></div>
+    <div class="group relative border border-gold/10 p-10 overflow-hidden transition-colors duration-300 hover:border-gold/28 rev d3"><div class="card-bottom-line"></div><span class="font-cinzel text-gold opacity-60 mb-4 block" style="font-size:9px;letter-spacing:.3em">TECH BRAND</span><h3 class="font-serif font-light text-white mb-3 text-3xl">Xingfire</h3><p class="font-playfair text-white/55 leading-relaxed mb-5 text-sm">AI financial application — strategy × data × automation.</p><p class="font-playfair text-white/28 text-xs" style="letter-spacing:.08em">AI decisions · Financial systems · Quant strategy</p></div>
+  </div>
+</section>
+<div class="gold-divider"></div>
+
+<!-- FOUNDER -->
+<section id="en-founder" class="max-w-[1300px] mx-auto px-14 py-28">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center" style="direction:rtl">
+    <img data-img="edinburgh" src="" alt="Mike Lee" class="w-full rev" style="aspect-ratio:4/3;object-fit:cover;filter:grayscale(12%) brightness(.88);direction:ltr">
+    <div class="rev d1" style="direction:ltr">
+      <span class="font-cinzel text-gold opacity-62 mb-4 block text-[10px]" style="letter-spacing:.44em">FOUNDER</span>
+      <h2 class="font-serif font-light text-white leading-snug mb-5" style="font-size:clamp(30px,3.5vw,50px)">Mike Lee<br><em class="text-gold-l" style="font-style:italic">The Operator</em></h2>
+      <p class="font-playfair text-white/55 leading-relaxed mb-4 text-base">25+ years across marketing strategy, AI systems, brand building, and business investment.</p>
+      <p class="font-playfair text-white/55 leading-relaxed mb-6 text-base">Mike teaches AI business application courses and advises companies on scalable, AI-augmented commercial systems.</p>
+      <blockquote class="font-serif italic font-light text-white/55 pl-5 border-l border-gold/28 leading-relaxed text-[20px]">"Business should never depend on luck alone."</blockquote>
+    </div>
+  </div>
+</section>
+<div class="gold-divider"></div>
+
+<!-- CTA / CONTACT -->
+<section id="en-contact" class="text-center px-14 py-36" style="background:linear-gradient(to bottom,#070707,#0D0D0D)">
+  <div class="max-w-lg mx-auto">
+    <span class="font-cinzel text-gold opacity-62 mb-5 block rev text-[10px]" style="letter-spacing:.44em">GET STARTED</span>
+    <h2 class="font-serif font-light text-white leading-snug mb-5 rev d1" style="font-size:clamp(36px,5vw,62px)">Ready to build<br><em class="text-gold-l" style="font-style:italic">the next system?</em></h2>
+    <p class="font-playfair text-white/55 leading-relaxed mb-12 rev d2 text-base">Partnerships, investments, and collaborations<br>are available to the right people.</p>
+    <div class="rev d3 flex gap-4 justify-center flex-wrap">
+      <a href="circle.html" class="font-cinzel text-[12px] text-bk bg-gold px-10 py-4 no-underline transition-all hover:bg-gold-l inline-block" style="letter-spacing:.26em">Request Access</a>
+      <a onclick="smoothTo('en-about',event)" class="font-cinzel text-[12px] text-gold border border-gold/30 px-10 py-4 no-underline cursor-pointer transition-all hover:bg-gold/10 hover:border-gold" style="letter-spacing:.26em">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSING -->
+<section class="text-center px-14 py-28 bg-bk-2">
+  <div class="max-w-2xl mx-auto">
+    <p class="font-serif font-light italic text-white/55 leading-[1.65] mb-14 rev" style="font-size:clamp(28px,3.6vw,48px);letter-spacing:.03em">The future is not about markets —<br><strong class="not-italic font-normal text-white">it's about system versus system.</strong></p>
+    <span class="font-cinzel text-gold block mb-3 rev d1" style="font-size:20px;letter-spacing:.42em">SUN9 GROUP</span>
+    <p class="font-playfair text-white/28 rev d2 text-[13px]" style="letter-spacing:.14em">AI · TRAFFIC · CAPITAL</p>
+  </div>
+</section>
+
+<footer class="border-t border-gold/10 px-14 py-9 flex flex-wrap justify-between items-center gap-4 bg-bk">
+  <p class="font-playfair text-white/28 text-[13px]">© 2025 Sun9 Group · All rights reserved.</p>
+  <ul class="flex gap-7 list-none">
+    <li><a onclick="smoothTo('en-about',event)"   class="font-playfair text-white/28 text-[13px] no-underline hover:text-gold transition-colors cursor-pointer">About</a></li>
+    <li><a onclick="smoothTo('en-cap',event)"     class="font-playfair text-white/28 text-[13px] no-underline hover:text-gold transition-colors cursor-pointer">Capabilities</a></li>
+    <li><a href="circle.html" class="font-playfair text-white/28 text-[13px] no-underline hover:text-gold transition-colors">Private Circle</a></li>
+    <li><a href="index.html"  class="font-playfair text-white/28 text-[13px] no-underline hover:text-gold transition-colors">中文</a></li>
+  </ul>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
