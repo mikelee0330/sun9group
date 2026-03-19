@@ -18,9 +18,9 @@ const IMGS = {
    三個關鍵字循環打字，Vanilla JS，無外部套件
 ───────────────────────────────────────── */
 const TW_WORDS = [
-  { text: '流量短影音', color: '#4ADE80' },
-  { text: 'K-POP文化',  color: '#EC4899' },
-  { text: 'AI 投資',    color: '#3B82F6' },
+  { text: '流量短影音', color: '#C9A84C' },
+  { text: 'K-POP文化',  color: '#C9A84C' },
+  { text: 'AI 投資',    color: '#C9A84C' },
 ];
 
 function startTypewriter() {
