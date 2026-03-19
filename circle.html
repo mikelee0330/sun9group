@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>小圈子專區 · Sun9 Group</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Noto+Serif+TC:wght@300;400&family=Cinzel:wght@400&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{gold:'#C9A84C','gold-l':'#E8C97A',bk:'#070707','bk-2':'#0D0D0D','bk-3':'#111111'},fontFamily:{serif:['"Cormorant Garamond"','Georgia','serif'],cinzel:['"Cinzel"','serif'],zh:['"Noto Serif TC"','serif']}}}}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-bk text-white min-h-screen" style="-webkit-font-smoothing:antialiased">
+
+<a href="index.html" class="fixed top-7 left-11 font-cinzel text-[10px] text-white/28 no-underline hover:text-gold transition-colors z-50" style="letter-spacing:.25em">← 返回主站</a>
+
+<!-- GATE -->
+<div id="gate" class="min-h-screen flex items-center justify-center relative overflow-hidden">
+  <canvas id="gc" class="absolute inset-0 w-full h-full"></canvas>
+  <div class="gate-box">
+    <div class="mb-8 opacity-45 flex justify-center">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="rgba(201,168,76,.7)" stroke-width="1.5">
+        <rect x="6" y="16" width="24" height="16" rx="2"/>
+        <path d="M12 16v-5a6 6 0 0112 0v5"/>
+        <circle cx="18" cy="24" r="2" fill="rgba(201,168,76,.7)" stroke="none"/>
+      </svg>
+    </div>
+    <span class="font-cinzel text-gold opacity-70 mb-3 block text-center text-[9px]" style="letter-spacing:.44em">PRIVATE CIRCLE</span>
+    <h1 class="font-serif font-light text-white text-center mb-2" style="font-size:36px">小圈子<br><em class="text-gold-l" style="font-style:italic">專區</em></h1>
+    <p class="font-zh font-light text-white/28 text-center leading-relaxed mb-9 text-[13px]" style="letter-spacing:.05em">此區域僅限內部成員進入<br>請輸入您的專屬密碼</p>
+    <div class="relative mb-4">
+      <input id="pw" type="password" placeholder="輸入密碼"
+             class="w-full bg-white/4 border border-gold/28 text-white font-serif text-[20px] text-center px-4 py-3 outline-none transition-colors focus:border-gold/60"
+             style="letter-spacing:.3em;background:rgba(255,255,255,.04)">
+      <button onclick="togglePw()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer text-white/28 hover:text-gold transition-colors p-1">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+    <p id="pl" class="font-cinzel text-gold text-[9px] text-center h-4 mb-3 opacity-0 transition-opacity" style="letter-spacing:.3em">驗證中...</p>
+    <p id="pe" class="text-red-500 font-zh text-[12px] text-center h-4 mb-3 opacity-0 transition-opacity" style="letter-spacing:.06em">密碼錯誤，請再試一次</p>
+    <button onclick="checkPw()" id="be"
+            class="w-full font-cinzel text-[11px] text-bk bg-gold py-4 border-none cursor-pointer transition-all hover:bg-gold-l"
+            style="letter-spacing:.28em">進入小圈子</button>
+    <p class="font-zh font-light text-white/28 text-[11px] text-center mt-5" style="letter-spacing:.06em">沒有密碼？<a href="index.html#private" class="text-gold no-underline">申請加入</a></p>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div id="content" style="display:none">
+  <header class="bg-bk border-b border-gold/10 px-14 py-6 flex justify-between items-center sticky top-0 z-50">
+    <div class="flex items-center gap-4">
+      <span class="font-cinzel text-gold text-[15px]" style="letter-spacing:.3em">SUN9</span>
+      <span class="font-cinzel text-[8px] text-bk bg-gold px-3 py-1" style="letter-spacing:.22em">PRIVATE CIRCLE</span>
+    </div>
+    <button onclick="logout()" class="font-cinzel text-[9px] text-white/28 border border-gold/15 px-4 py-2 cursor-pointer hover:text-gold hover:border-gold transition-all" style="background:none;letter-spacing:.2em">登出</button>
+  </header>
+
+  <div class="max-w-[1160px] mx-auto px-14 py-16">
+    <div class="text-center mb-16">
+      <h1 class="font-serif font-light text-white mb-3" style="font-size:clamp(28px,4vw,48px)">歡迎回來<br><em class="text-gold-l" style="font-style:italic">小圈子</em></h1>
+      <p class="font-zh font-light text-white/55 leading-loose text-[15px]" style="letter-spacing:.05em">以下是僅對成員開放的資源與內容</p>
+    </div>
+
+    <!-- 卡片 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-14">
+      <div class="border border-gold/10 p-8 hover:border-gold/28 transition-colors cursor-pointer">
+        <span class="font-cinzel text-gold opacity-60 mb-3 block text-[9px]" style="letter-spacing:.26em">RESOURCES</span>
+        <h3 class="font-serif font-light text-white mb-2 text-[22px]">課程資源<span class="font-cinzel text-[7px] text-bk bg-gold px-2 py-1 ml-2 align-middle" style="letter-spacing:.2em">NEW</span></h3>
+        <p class="font-zh font-light text-white/55 leading-loose text-sm mb-4">AI 商業應用課程內容、工具包與操作手冊，專為圈內成員設計。</p>
+        <p class="font-zh font-light text-white/28 text-[11px]" style="letter-spacing:.07em">最近更新：2025 Q1</p>
+      </div>
+      <div class="border border-gold/10 p-8 hover:border-gold/28 transition-colors cursor-pointer">
+        <span class="font-cinzel text-gold opacity-60 mb-3 block text-[9px]" style="letter-spacing:.26em">DEALS</span>
+        <h3 class="font-serif font-light text-white mb-2 text-[22px]">合作項目</h3>
+        <p class="font-zh font-light text-white/55 leading-loose text-sm mb-4">內部正在進行或即將啟動的投資與合作機會，僅對圈內成員披露。</p>
+        <p class="font-zh font-light text-white/28 text-[11px]" style="letter-spacing:.07em">3 個項目開放中</p>
+      </div>
+      <div class="border border-gold/10 p-8 hover:border-gold/28 transition-colors cursor-pointer">
+        <span class="font-cinzel text-gold opacity-60 mb-3 block text-[9px]" style="letter-spacing:.26em">COMMUNITY</span>
+        <h3 class="font-serif font-light text-white mb-2 text-[22px]">圈內動態</h3>
+        <p class="font-zh font-light text-white/55 leading-loose text-sm mb-4">成員交流、麥大哥的私訊分享，以及不對外公開的操盤心得。</p>
+        <p class="font-zh font-light text-white/28 text-[11px]" style="letter-spacing:.07em">每週更新</p>
+      </div>
+    </div>
+
+    <!-- 最新公告 -->
+    <div class="mb-14">
+      <h2 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:25px">最新公告</h2>
+      <div id="posts-container" class="space-y-4">
+        <p class="font-zh font-light text-white/28 text-center py-8 border border-gold/10 text-[14px]">載入中...</p>
+      </div>
+    </div>
+
+    <!-- 快速連結 -->
+    <div>
+      <h2 class="font-serif font-light text-white mb-6 pb-4 border-b border-gold/10" style="font-size:25px">快速連結</h2>
+      <div id="links-container" class="grid grid-cols-1 md:grid-cols-2 gap-px bg-gold/5">
+        <a href="https://www.facebook.com/mikelee0330/" target="_blank" class="flex justify-between items-center px-7 py-5 bg-bk-3 no-underline hover:bg-[#161616] transition-colors"><span class="font-zh font-light text-white/55 text-[13px]">麥大哥 Facebook</span><span class="text-gold opacity-55">→</span></a>
+        <a href="https://www.instagram.com/mikestudio/reels/" target="_blank" class="flex justify-between items-center px-7 py-5 bg-bk-3 no-underline hover:bg-[#161616] transition-colors"><span class="font-zh font-light text-white/55 text-[13px]">Instagram Reels</span><span class="text-gold opacity-55">→</span></a>
+        <a href="https://www.tiktok.com/@mikelee0330tw" target="_blank" class="flex justify-between items-center px-7 py-5 bg-bk-3 no-underline hover:bg-[#161616] transition-colors"><span class="font-zh font-light text-white/55 text-[13px]">TikTok 頻道</span><span class="text-gold opacity-55">→</span></a>
+        <a href="https://www.tdkculture.com/" target="_blank" class="flex justify-between items-center px-7 py-5 bg-bk-3 no-underline hover:bg-[#161616] transition-colors"><span class="font-zh font-light text-white/55 text-[13px]">TDK Culture 官網</span><span class="text-gold opacity-55">→</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+const SB_URL2='https://sdjqekzcqmohxslvzsgi.supabase.co';
+const SB_KEY2='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkanFla3pjcW1vaHhzbHZ6c2dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM5MTU5NDksImV4cCI6MjA4OTQ5MTk0OX0.3yxKXgqgazMo2g4DPKdSynSbYkFNnJ3C6hasaEMiq48';
+const sb2=supabase.createClient(SB_URL2,SB_KEY2);
+
+async function checkPw(){
+  const v=document.getElementById('pw').value.trim();if(!v)return;
+  const be=document.getElementById('be'),pe=document.getElementById('pe'),pl=document.getElementById('pl');
+  be.disabled=true;pe.style.opacity='0';pl.style.opacity='1';
+  try{
+    const res=await fetch(`${SB_URL2}/functions/v1/verify-password`,{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY2},body:JSON.stringify({type:'circle',password:v})});
+    const {ok}=await res.json();
+    if(ok){sessionStorage.setItem('ca','1');document.getElementById('gate').style.display='none';document.getElementById('content').style.display='block';loadData();}
+    else{pe.style.opacity='1';document.getElementById('pw').style.borderColor='rgba(192,57,43,.5)';setTimeout(()=>document.getElementById('pw').style.borderColor='',1200);}
+  }catch{pe.textContent='連線錯誤，請稍後再試';pe.style.opacity='1';}
+  pl.style.opacity='0';be.disabled=false;
+}
+function logout(){sessionStorage.removeItem('ca');document.getElementById('gate').style.display='flex';document.getElementById('content').style.display='none';document.getElementById('pw').value='';}
+function togglePw(){const i=document.getElementById('pw');i.type=i.type==='password'?'text':'password';}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')checkPw();});
+async function loadData(){
+  const{data:posts}=await sb2.from('circle_posts').select('*').order('created_at',{ascending:false});
+  const pc=document.getElementById('posts-container');
+  if(!posts||!posts.length){pc.innerHTML='<p class="font-zh font-light text-white/28 text-center py-8 border border-gold/10 text-sm">目前暫無公告，請稍後回來查看。</p>';}
+  else{pc.innerHTML=posts.map(p=>`<div class="border border-gold/10 px-7 py-6"><h3 class="font-serif font-light text-white mb-2 text-[19px]">${p.title||''}</h3><p class="font-zh font-light text-white/55 leading-loose text-sm">${(p.body||'').replace(/\n/g,'<br>')}</p><span class="font-cinzel text-white/28 text-[8px] mt-3 block" style="letter-spacing:.22em">${new Date(p.created_at).toLocaleDateString('zh-TW')}</span></div>`).join('');}
+  const{data:links}=await sb2.from('circle_links').select('*').order('sort_order');
+  if(links&&links.length){const lc=document.getElementById('links-container');lc.innerHTML=links.map(l=>`<a href="${l.url}" target="_blank" class="flex justify-between items-center px-7 py-5 bg-bk-3 no-underline hover:bg-[#161616] transition-colors"><span class="font-zh font-light text-white/55 text-[13px]">${l.label}</span><span class="text-gold opacity-55">→</span></a>`).join('');}
+}
+if(sessionStorage.getItem('ca')==='1'){document.getElementById('gate').style.display='none';document.getElementById('content').style.display='block';loadData();}
+// Particles for gate
+(function(){const cv=document.getElementById('gc'),ctx=cv.getContext('2d');let W,H,pts=[];const N=70,L=130,G='rgba(201,168,76,';function r(){W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight}function m(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,sz:Math.random()*1.4+.3,a:Math.random()*.35+.1,p:Math.random()*Math.PI*2}}r();for(let i=0;i<N;i++)pts.push(m());window.addEventListener('resize',()=>{r();pts=[];for(let i=0;i<N;i++)pts.push(m())});let t=0;function d(){ctx.clearRect(0,0,W,H);t+=.007;pts.forEach(p=>{p.vx+=Math.sin(t+p.p)*.01;p.vy+=Math.cos(t+p.p*1.3)*.01;p.vx*=.985;p.vy*=.985;p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.sz,0,Math.PI*2);ctx.fillStyle=G+p.a+')';ctx.fill();});for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){const a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,dd=Math.sqrt(dx*dx+dy*dy);if(dd<L){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=G+(0.12*(1-dd/L))+')';ctx.lineWidth=.5;ctx.stroke();}}requestAnimationFrame(d);}d();})();
+</script>
+</body>
+</html>
